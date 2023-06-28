@@ -28,6 +28,7 @@ find_package(Eigen3 REQUIRED)
 find_package(decomp_util REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(decomp_ros_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 include_directories(
 	include
@@ -65,6 +66,37 @@ rclcpp_components_register_node(seedDecomp_component
 set(node_plugins "${node_plugins}decompros::SeedDecomp;$<TARGET_FILE:seedDecomp_component>\n")
 
 
+
+
+
+
+add_library(vizPoly_component SHARED
+	src/visualize_polyhedron.cpp
+)
+target_compile_definitions(vizPoly_component 
+	PRIVATE "COMPOSITION_BUILDING_DLL")
+target_link_libraries(vizPoly_component
+	${PCL_LIBRARIES}
+	)
+ament_target_dependencies(vizPoly_component
+	rclcpp
+	rclcpp_components
+	std_msgs
+	geometry_msgs
+	decomp_ros_msgs
+	visualization_msgs
+	)
+
+rclcpp_components_register_node(vizPoly_component
+	PLUGIN "decompros::VizPoly"
+	EXECUTABLE vizPoly_node)
+
+set(node_plugins "${node_plugins}decompros::VizPoly;$<TARGET_FILE:vizPoly_component>\n")
+
+
+
+
+
 # since the package installs libraries without exporting them
 # it needs to make sure that the library path is being exported
 if(NOT WIN32)
@@ -74,6 +106,7 @@ endif()
 
 install(TARGETS
 	seedDecomp_component
+	vizPoly_component
 	ARCHIVE DESTINATION lib
 	LIBRARY DESTINATION lib
 	RUNTIME DESTINATION lib

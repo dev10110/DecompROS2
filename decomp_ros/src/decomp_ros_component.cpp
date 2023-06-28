@@ -14,8 +14,6 @@ SeedDecomp::SeedDecomp(const rclcpp::NodeOptions &options)
   pub_polygon_ =
       this->create_publisher<decomp_ros_msgs::msg::PolyhedronStamped>("sfc",
                                                                       10);
-  pub_polygon_viz_ = this->create_publisher<geometry_msgs::msg::PolygonStamped>(
-      "sfc_polygon", 10);
   pub_fov_ =
       this->create_publisher<sensor_msgs::msg::PointCloud>("fov_obstacles", 10);
 
@@ -167,7 +165,6 @@ void SeedDecomp::cloud_callback(const PointCloud2::SharedPtr msg) const {
 
   // publish results
   publish_polyhedron(msg->header, poly);
-  publish_polygon_stamped(msg->header, poly);
 }
 
 void SeedDecomp::publish_polyhedron(const std_msgs::msg::Header header,
@@ -176,50 +173,22 @@ void SeedDecomp::publish_polyhedron(const std_msgs::msg::Header header,
   decomp_ros_msgs::msg::PolyhedronStamped msg;
   msg.header = header;
 
-  for (const auto &p : poly.hyperplanes()) {
-    geometry_msgs::msg::Vector3 a;
+  for (const auto &hp : poly.hyperplanes()) {
+    geometry_msgs::msg::Point point;
+    geometry_msgs::msg::Vector3 normal;
 
-    double x = p.p_(0);
-    double y = p.p_(1);
-    double z = p.p_(2);
-    a.x = p.n_(0);
-    a.y = p.n_(1);
-    a.z = p.n_(2);
+    point.x = hp.p_(0);
+    point.y = hp.p_(1);
+    point.z = hp.p_(2);
+    normal.x = hp.n_(0);
+    normal.y = hp.n_(1);
+    normal.z = hp.n_(2);
 
-    double b = x * a.x + y * a.y + z * a.z;
-
-    msg.poly.a.push_back(a);
-    msg.poly.b.push_back(b);
+    msg.poly.ps.push_back(point);
+    msg.poly.ns.push_back(normal);
   }
 
   pub_polygon_->publish(msg);
-}
-
-void SeedDecomp::publish_polygon_stamped(const std_msgs::msg::Header header,
-                                         Polyhedron3D poly) const {
-
-  vec_E<vec_Vec3f> verts = cal_vertices(poly);
-
-  geometry_msgs::msg::PolygonStamped msg_poly;
-  msg_poly.header = header;
-
-  // now start pushing the points
-  for (size_t i = 0; i < verts.size(); ++i) {
-    auto vs = verts[i];
-    for (size_t j = 0; j < vs.size(); ++j) {
-      auto v = vs[j];
-      geometry_msgs::msg::Point32 p;
-      p.x = v(0);
-      p.y = v(1);
-      p.z = v(2);
-      msg_poly.polygon.points.push_back(p);
-    }
-  }
-  RCLCPP_DEBUG(this->get_logger(), "msg_poly has %zu points",
-               msg_poly.polygon.points.size());
-
-  // publish the polygon
-  pub_polygon_viz_->publish(msg_poly);
 }
 
 } // namespace decompros

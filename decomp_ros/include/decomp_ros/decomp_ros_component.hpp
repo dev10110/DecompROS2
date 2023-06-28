@@ -29,8 +29,6 @@ protected:
   // pubs
   rclcpp::Publisher<decomp_ros_msgs::msg::PolyhedronStamped>::SharedPtr
       pub_polygon_;
-  rclcpp::Publisher<geometry_msgs::msg::PolygonStamped>::SharedPtr
-      pub_polygon_viz_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr pub_fov_;
 
   // params
@@ -52,7 +50,6 @@ protected:
   void publish_fov_obs();
   void publish_fov_obs(std_msgs::msg::Header);
   void cloud_callback(const PointCloud2::SharedPtr msg) const;
-  void publish_polygon_stamped(std_msgs::msg::Header, Polyhedron3D) const;
   void publish_polyhedron(std_msgs::msg::Header, Polyhedron3D) const;
 };
 
