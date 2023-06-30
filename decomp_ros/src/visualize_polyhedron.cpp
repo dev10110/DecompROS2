@@ -15,7 +15,7 @@ VizPoly::VizPoly(const rclcpp::NodeOptions &options)
   // create the publishers
   // pub_polygon_viz_ =
   // this->create_publisher<geometry_msgs::msg::PolygonStamped>(
-  //    "sfc_viz", 10);
+  //     "sfc_viz", 10);
   pub_polygon_viz2_ =
       this->create_publisher<visualization_msgs::msg::Marker>("sfc/viz", 10);
 
@@ -51,7 +51,7 @@ void VizPoly::callback(
     auto n = msg->poly.ns[i];
     auto p = msg->poly.ps[i];
     // get the hyperplane
-    Hyperplane3D h(Vec3f(n.x, n.y, n.z), Vec3f(p.x, p.y, p.z));
+    Hyperplane3D h(Vec3f(p.x, p.y, p.z), Vec3f(n.x, n.y, n.z));
 
     // add to polyhedron
     poly.add(h);
@@ -59,6 +59,8 @@ void VizPoly::callback(
 
   // publish as polygons
   publish_polygon_as_lines(msg->header, poly);
+  // to debug, might be helpful to plot this too
+  // publish_polygon_stamped(msg->header, poly);
 }
 
 geometry_msgs::msg::Point toPoint(Vec3f v) {
@@ -81,7 +83,7 @@ void VizPoly::publish_polygon_as_lines(const std_msgs::msg::Header header,
   visualization_msgs::msg::Marker msg;
   msg.header = header;
   msg.type = visualization_msgs::msg::Marker::LINE_LIST;
-  msg.color.g = 1.0;
+  msg.color.r = 1.0;
   msg.color.a = 1.0;
   msg.scale.x = 0.01;
   msg.scale.y = 0.01;
@@ -103,12 +105,12 @@ void VizPoly::publish_polygon_as_lines(const std_msgs::msg::Header header,
 
 // void VizPoly::publish_polygon_stamped(const std_msgs::msg::Header header,
 //                                          Polyhedron3D poly) const {
-//
+// 
 //   vec_E<vec_Vec3f> verts = cal_vertices(poly);
-//
+// 
 //   geometry_msgs::msg::PolygonStamped msg_poly;
 //   msg_poly.header = header;
-//
+// 
 //   // now start pushing the points
 //   for (size_t i = 0; i < verts.size(); ++i) {
 //     auto vs = verts[i];
@@ -123,7 +125,7 @@ void VizPoly::publish_polygon_as_lines(const std_msgs::msg::Header header,
 //   }
 //   RCLCPP_DEBUG(this->get_logger(), "msg_poly has %zu points",
 //                msg_poly.polygon.points.size());
-//
+// 
 //   // publish the polygon
 //   pub_polygon_viz_->publish(msg_poly);
 // }

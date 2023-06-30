@@ -32,23 +32,24 @@ class TestPublisher(Node):
     def __init__(self):
         super().__init__('test_publisher')
         self.publisher_ = self.create_publisher(PolyhedronStamped, 'sfc', 10)
-        timer_period = 0.001  # seconds
+        timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
         self.create_poly();
 
     def create_poly(self):
         # create a box
-        nx = toVector3(random.random()+3.25,0,0);
+        nx = toVector3(1,0,0);
         ny = toVector3(0,1,0);
         nz = toVector3(0,0,1);
-        nnx = toVector3(random.random()-0.25,0,0);
+        nnx = toVector3(-1,0,0);
         nny = toVector3(0,-1,0);
         nnz = toVector3(0,0,-1);
+
         px = toPoint3(1,0,0);
         py = toPoint3(0,1,0);
         pz = toPoint3(0,0,1);
-        npx = toPoint3(-1,0,0);
+        npx = toPoint3(-4,0,0);
         npy = toPoint3(0,-1,0);
         npz = toPoint3(0,0,-1);
 
@@ -68,7 +69,7 @@ class TestPublisher(Node):
 
         self.poly = PolyhedronStamped()
         self.poly.header.stamp = self.get_clock().now().to_msg()
-        self.poly.header.frame_id = "world"
+        self.poly.header.frame_id = "camera"
         self.poly.poly = poly
 
     def timer_callback(self):
