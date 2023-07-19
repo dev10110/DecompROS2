@@ -29,6 +29,25 @@ find_package(decomp_util REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(decomp_ros_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
+find_package(message_filters REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+
+
+# if(TARGET tf2_geometry_msgs::tf2_geometry_msgs)
+#   get_target_property(_include_dirs tf2_geometry_msgs::tf2_geometry_msgs INTERFACE_INCLUDE_DIRECTORIES)
+# else()
+#   set(_include_dirs ${tf2_geometry_msgs_INCLUDE_DIRS})
+# endif()
+# 
+# find_file(TF2_CPP_HEADERS
+#   NAMES tf2_geometry_msgs.hpp
+#   PATHS ${_include_dirs}
+#   NO_CACHE
+#   PATH_SUFFIXES tf2_geometry_msgs
+# )
+# 
+
 
 include_directories(
 	include
@@ -97,6 +116,39 @@ set(node_plugins "${node_plugins}decompros::VizPoly;$<TARGET_FILE:vizPoly_compon
 
 
 
+
+add_library(sfcBuffer_component SHARED
+	src/sfc_buffer.cpp
+)
+target_compile_definitions(sfcBuffer_component 
+	PRIVATE "COMPOSITION_BUILDING_DLL")
+target_link_libraries(sfcBuffer_component
+  ${PCL_LIBRARIES}
+)
+ament_target_dependencies(sfcBuffer_component
+	rclcpp
+	rclcpp_components
+	geometry_msgs
+	decomp_ros_msgs
+	message_filters
+	tf2_ros
+	tf2_geometry_msgs
+	)
+# if(EXISTS ${TF2_CPP_HEADERS})
+#   target_compile_definitions(sfcBuffer_component PUBLIC -DTF2_CPP_HEADERS)
+# endif()
+# 
+rclcpp_components_register_node(sfcBuffer_component
+	PLUGIN "decompros::SFCBuffer"
+	EXECUTABLE sfcBuffer_node)
+
+set(node_plugins "${node_plugins}decompros::SFCBuffer;$<TARGET_FILE:sfcBuffer_component>\n")
+
+
+
+
+
+
 # since the package installs libraries without exporting them
 # it needs to make sure that the library path is being exported
 if(NOT WIN32)
@@ -107,6 +159,7 @@ endif()
 install(TARGETS
 	seedDecomp_component
 	vizPoly_component
+	sfcBuffer_component
 	ARCHIVE DESTINATION lib
 	LIBRARY DESTINATION lib
 	RUNTIME DESTINATION lib
