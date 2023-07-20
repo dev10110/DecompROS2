@@ -34,19 +34,19 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 
 
-# if(TARGET tf2_geometry_msgs::tf2_geometry_msgs)
-#   get_target_property(_include_dirs tf2_geometry_msgs::tf2_geometry_msgs INTERFACE_INCLUDE_DIRECTORIES)
-# else()
-#   set(_include_dirs ${tf2_geometry_msgs_INCLUDE_DIRS})
-# endif()
-# 
-# find_file(TF2_CPP_HEADERS
-#   NAMES tf2_geometry_msgs.hpp
-#   PATHS ${_include_dirs}
-#   NO_CACHE
-#   PATH_SUFFIXES tf2_geometry_msgs
-# )
-# 
+if(TARGET tf2_geometry_msgs::tf2_geometry_msgs)
+  get_target_property(_include_dirs tf2_geometry_msgs::tf2_geometry_msgs INTERFACE_INCLUDE_DIRECTORIES)
+else()
+  set(_include_dirs ${tf2_geometry_msgs_INCLUDE_DIRS})
+endif()
+
+find_file(TF2_CPP_HEADERS
+  NAMES tf2_geometry_msgs.hpp
+  PATHS ${_include_dirs}
+  NO_CACHE
+  PATH_SUFFIXES tf2_geometry_msgs
+)
+
 
 
 include_directories(
@@ -134,10 +134,10 @@ ament_target_dependencies(sfcBuffer_component
 	tf2_ros
 	tf2_geometry_msgs
 	)
-# if(EXISTS ${TF2_CPP_HEADERS})
-#   target_compile_definitions(sfcBuffer_component PUBLIC -DTF2_CPP_HEADERS)
-# endif()
-# 
+if(EXISTS ${TF2_CPP_HEADERS})
+  target_compile_definitions(sfcBuffer_component PUBLIC -DTF2_CPP_HEADERS)
+endif()
+
 rclcpp_components_register_node(sfcBuffer_component
 	PLUGIN "decompros::SFCBuffer"
 	EXECUTABLE sfcBuffer_node)
