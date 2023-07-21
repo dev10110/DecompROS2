@@ -19,7 +19,7 @@ SFCBuffer::SFCBuffer(const rclcpp::NodeOptions &options)
   home_sfc_xmax_ = 0.5;
   home_sfc_ymin_ = -0.5;
   home_sfc_ymax_ = 0.5;
-  home_sfc_zmin_ = 0.0;
+  home_sfc_zmin_ = -0.5;
   home_sfc_zmax_ = 1.5;
 
   // construct the home_sfc
