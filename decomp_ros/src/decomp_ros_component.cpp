@@ -194,4 +194,4 @@ void SeedDecomp::publish_polyhedron(const std_msgs::msg::Header header,
 } // namespace decompros
 
 #include "rclcpp_components/register_node_macro.hpp"
-RCLCPP_COMPONENTS_REGISTER_NODE(decompros::SeedDecomp);
+RCLCPP_COMPONENTS_REGISTER_NODE(decompros::SeedDecomp)
