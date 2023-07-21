@@ -7,9 +7,9 @@
 
 //#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #ifdef TF2_CPP_HEADERS
-  #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #else
-  #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #endif
 
 #include "geometry_msgs/msg/point.hpp"

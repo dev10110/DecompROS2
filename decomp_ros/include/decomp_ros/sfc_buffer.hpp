@@ -1,8 +1,6 @@
 #ifndef decompros_sfcbuffer
 #define decompros_sfcbuffer
 
-
-
 #include "precompile.hpp"
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/create_timer_ros.h"

@@ -1,11 +1,11 @@
 #ifndef DECOMPROS_SEEDDECOMP
 #define DECOMPROS_SEEDDECOMP
 
-#include "precompile.hpp"
 #include "pcl_conversions/pcl_conversions.h"
+#include "precompile.hpp"
+#include <decomp_geometry/geometric_utils.h>
 #include <decomp_util/line_segment.h>
 #include <decomp_util/seed_decomp.h>
-#include <decomp_geometry/geometric_utils.h>
 #include <iostream>
 #include <memory>
 
