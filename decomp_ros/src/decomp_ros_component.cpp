@@ -1,7 +1,4 @@
 #include "decomp_ros/decomp_ros_component.hpp"
-#include <decomp_geometry/geometric_utils.h>
-#include <iostream>
-#include <memory>
 
 namespace decompros {
 

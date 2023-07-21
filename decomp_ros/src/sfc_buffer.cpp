@@ -3,10 +3,6 @@
 // also converts them to specified frame
 
 #include "decomp_ros/sfc_buffer.hpp"
-// #include <decomp_geometry/geometric_utils.h>
-#include <chrono>
-#include <iostream>
-#include <memory>
 
 namespace decompros {
 

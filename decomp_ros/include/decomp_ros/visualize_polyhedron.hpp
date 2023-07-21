@@ -1,15 +1,12 @@
 #ifndef DECOMPROS_VIZPOLY
 #define DECOMPROS_VIZPOLY
 
-#include "decomp_ros_msgs/msg/polyhedron_array.hpp"
-#include "decomp_ros_msgs/msg/polyhedron_stamped.hpp"
-//#include "geometry_msgs/msg/point32.hpp"
-#include "geometry_msgs/msg/polygon_stamped.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/header.hpp"
-#include "visualization_msgs/msg/marker.hpp"
+#include "precompile.hpp"
 #include <decomp_util/line_segment.h>
 #include <decomp_util/seed_decomp.h>
+#include <decomp_geometry/geometric_utils.h>
+#include <iostream>
+#include <memory>
 
 namespace decompros {
 

@@ -1,21 +1,18 @@
 #ifndef decompros_sfcbuffer
 #define decompros_sfcbuffer
 
-#include "decomp_ros_msgs/msg/polyhedron_array.hpp"
-#include "decomp_ros_msgs/msg/polyhedron_stamped.hpp"
 
-#include "geometry_msgs/msg/point.hpp"
-#include "geometry_msgs/msg/vector3.hpp"
-#include "message_filters/subscriber.h"
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/header.hpp"
-#include "tf2_decomp_ros_msgs.hpp"
+
+#include "precompile.hpp"
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/create_timer_ros.h"
 #include "tf2_ros/message_filter.h"
 #include "tf2_ros/transform_listener.h"
 
 #include <boost/circular_buffer.hpp>
+#include <chrono>
+#include <iostream>
+#include <memory>
 
 namespace decompros {
 

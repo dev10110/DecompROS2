@@ -1,16 +1,13 @@
 #ifndef DECOMPROS_SEEDDECOMP
 #define DECOMPROS_SEEDDECOMP
 
-#include "decomp_ros_msgs/msg/polyhedron_stamped.hpp"
-#include "geometry_msgs/msg/point32.hpp"
-#include "geometry_msgs/msg/polygon_stamped.hpp"
+#include "precompile.hpp"
 #include "pcl_conversions/pcl_conversions.h"
-#include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/point_cloud.hpp"
-#include "sensor_msgs/msg/point_cloud2.hpp"
-#include "std_msgs/msg/header.hpp"
 #include <decomp_util/line_segment.h>
 #include <decomp_util/seed_decomp.h>
+#include <decomp_geometry/geometric_utils.h>
+#include <iostream>
+#include <memory>
 
 namespace decompros {
 using sensor_msgs::msg::PointCloud2;

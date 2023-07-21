@@ -68,6 +68,9 @@ target_compile_definitions(seedDecomp_component
 target_link_libraries(seedDecomp_component
 	${PCL_LIBRARIES}
 	)
+target_precompile_headers(seedDecomp_component PRIVATE
+  include/decomp_ros/precompile.hpp
+)
 ament_target_dependencies(seedDecomp_component
 	rclcpp
 	rclcpp_components
@@ -97,6 +100,9 @@ target_compile_definitions(vizPoly_component
 target_link_libraries(vizPoly_component
 	${PCL_LIBRARIES}
 	)
+target_precompile_headers(vizPoly_component PRIVATE
+  include/decomp_ros/precompile.hpp
+)
 ament_target_dependencies(vizPoly_component
 	rclcpp
 	rclcpp_components
@@ -124,6 +130,9 @@ target_compile_definitions(sfcBuffer_component
 	PRIVATE "COMPOSITION_BUILDING_DLL")
 target_link_libraries(sfcBuffer_component
   ${PCL_LIBRARIES}
+)
+target_precompile_headers(sfcBuffer_component PRIVATE
+  include/decomp_ros/precompile.hpp
 )
 ament_target_dependencies(sfcBuffer_component
 	rclcpp
