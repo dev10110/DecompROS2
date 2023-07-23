@@ -72,13 +72,17 @@ target_precompile_headers(seedDecomp_component PRIVATE
   include/decomp_ros/precompile.hpp
 )
 ament_target_dependencies(seedDecomp_component
+	decomp_ros_msgs
+	geometry_msgs
+	message_filters
+	pcl_ros
 	rclcpp
 	rclcpp_components
-	std_msgs
 	sensor_msgs
-	geometry_msgs
-	pcl_ros
-	decomp_ros_msgs
+	std_msgs
+	tf2_geometry_msgs
+	tf2_ros
+	visualization_msgs
 	)
 
 rclcpp_components_register_node(seedDecomp_component
@@ -104,11 +108,16 @@ target_precompile_headers(vizPoly_component PRIVATE
   include/decomp_ros/precompile.hpp
 )
 ament_target_dependencies(vizPoly_component
+	decomp_ros_msgs
+	geometry_msgs
+	message_filters
+	pcl_ros
 	rclcpp
 	rclcpp_components
+	sensor_msgs
 	std_msgs
-	geometry_msgs
-	decomp_ros_msgs
+	tf2_geometry_msgs
+	tf2_ros
 	visualization_msgs
 	)
 
@@ -135,13 +144,17 @@ target_precompile_headers(sfcBuffer_component PRIVATE
   include/decomp_ros/precompile.hpp
 )
 ament_target_dependencies(sfcBuffer_component
+	decomp_ros_msgs
+	geometry_msgs
+	message_filters
+	pcl_ros
 	rclcpp
 	rclcpp_components
-	geometry_msgs
-	decomp_ros_msgs
-	message_filters
-	tf2_ros
+	sensor_msgs
+	std_msgs
 	tf2_geometry_msgs
+	tf2_ros
+	visualization_msgs
 	)
 if(EXISTS ${TF2_CPP_HEADERS})
   target_compile_definitions(sfcBuffer_component PUBLIC -DTF2_CPP_HEADERS)
