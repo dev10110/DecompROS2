@@ -41,4 +41,4 @@ and this can also be run as a composable node.
 This will publish a `visualization_msgs::msg::Marker` which contains a list of lines, and marks the edges of the polyhedron. Unfortunately, this node needs to find all the vertices of the polyhedron so it can be an expensive operation. 
 
 ## Disclaimer
-This is very much research code. It works, but do not trust it. 
+This is very much research code. It works, but do not trust it.  The license for the `DecompUtil` folder is different, and provided in that folder
