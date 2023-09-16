@@ -23,6 +23,11 @@ VizPoly::VizPoly(const rclcpp::NodeOptions &options)
   pub_polygon_array_viz2_ =
       this->create_publisher<visualization_msgs::msg::Marker>("sfc_array/viz",
                                                               10);
+  
+  color_r_ = this->declare_parameter<double>("color_r", color_r_);
+  color_g_ = this->declare_parameter<double>("color_g", color_g_);
+  color_b_ = this->declare_parameter<double>("color_b", color_b_);
+  color_a_ = this->declare_parameter<double>("color_a", color_a_);
 
   // create the subscribers
   rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
@@ -61,8 +66,10 @@ void VizPoly::callback(
   visualization_msgs::msg::Marker marker_msg;
   marker_msg.header = msg->header;
   marker_msg.type = visualization_msgs::msg::Marker::LINE_LIST;
-  marker_msg.color.r = 1.0;
-  marker_msg.color.a = 1.0;
+  marker_msg.color.r = color_r_;
+  marker_msg.color.g = color_g_;
+  marker_msg.color.b = color_b_;
+  marker_msg.color.a = color_a_;
   marker_msg.scale.x = 0.01;
   marker_msg.scale.y = 0.01;
   marker_msg.scale.z = 0.01;
@@ -85,8 +92,10 @@ void VizPoly::array_callback(
   visualization_msgs::msg::Marker marker_msg;
   marker_msg.header = array_msg->header;
   marker_msg.type = visualization_msgs::msg::Marker::LINE_LIST;
-  marker_msg.color.g = 1.0;
-  marker_msg.color.a = 1.0;
+  marker_msg.color.r = color_r_;
+  marker_msg.color.g = color_g_;
+  marker_msg.color.b = color_b_;
+  marker_msg.color.a = color_a_;
   marker_msg.scale.x = 0.01;
   marker_msg.scale.y = 0.01;
   marker_msg.scale.z = 0.01;

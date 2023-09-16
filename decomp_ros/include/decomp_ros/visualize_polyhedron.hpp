@@ -29,6 +29,11 @@ protected:
       pub_polygon_array_viz2_;
 
   // params
+  double color_r_ = 0.0f;
+  double color_g_ = 1.0f;
+  double color_b_ = 0.0f;
+  double color_a_ = 1.0f;
+
 
   // vars
 
