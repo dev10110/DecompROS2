@@ -84,17 +84,6 @@ struct Polyhedron {
     return vs_;
   }
 
-
-  // Shrink the polyhedron by some amount
-  void shrink(float d) {
-
-    for (size_t i = 0; i < vs_.size(); i++){
-      // move the point by the normal
-      vs_[i].p_ -= d * vs_[i].n_ / vs_[i].n_.norm() ;
-    }
-
-  }
-
   /// Hyperplane array
   vec_E<Hyperplane<Dim>> vs_; // normal must go outside
 

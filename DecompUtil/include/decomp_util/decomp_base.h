@@ -56,7 +56,7 @@ class DecompBase {
      * @brief Shrink the polyhedron
      * @param shrink_distance Shrink distance
      */
-    virtual void shrink(double /* shrink_distance */) {}
+    virtual void shrink(double shrink_distance) {}
  protected:
     virtual void add_local_bbox(Polyhedron<Dim> &Vs) = 0;
 

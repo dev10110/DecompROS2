@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.13)
+cmake_minimum_required(VERSION 2.8.3)
 project(decomp_util)
 
 # set default build type
