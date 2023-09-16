@@ -2,6 +2,7 @@
 #define DECOMPROS_VIZPOLY
 
 #include "precompile.hpp"
+#include "visualization_msgs/msg/marker.hpp"
 #include <decomp_geometry/geometric_utils.h>
 #include <decomp_util/line_segment.h>
 #include <decomp_util/seed_decomp.h>

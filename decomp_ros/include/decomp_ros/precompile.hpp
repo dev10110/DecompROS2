@@ -6,11 +6,8 @@
 #include "geometry_msgs/msg/point32.hpp"
 #include "geometry_msgs/msg/polygon_stamped.hpp"
 #include "geometry_msgs/msg/vector3.hpp"
-#include "message_filters/subscriber.h"
 #include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/point_cloud.hpp"
 #include "sensor_msgs/msg/point_cloud2.hpp"
 #include "std_msgs/msg/header.hpp"
-#include "visualization_msgs/msg/marker.hpp"
 
 #include "tf2_decomp_ros_msgs.hpp"

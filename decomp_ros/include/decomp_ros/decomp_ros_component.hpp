@@ -3,6 +3,7 @@
 
 #include "pcl_conversions/pcl_conversions.h"
 #include "precompile.hpp"
+#include "sensor_msgs/msg/point_cloud.hpp"
 #include <decomp_geometry/geometric_utils.h>
 #include <decomp_util/line_segment.h>
 #include <decomp_util/seed_decomp.h>

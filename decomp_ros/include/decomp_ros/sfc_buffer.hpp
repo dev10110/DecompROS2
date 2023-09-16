@@ -2,6 +2,7 @@
 #define decompros_sfcbuffer
 
 #include "precompile.hpp"
+#include "message_filters/subscriber.h"
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/create_timer_ros.h"
 #include "tf2_ros/message_filter.h"
