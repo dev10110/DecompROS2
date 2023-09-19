@@ -49,7 +49,7 @@ class TestPublisher(Node):
         px = toPoint3(1,0,0);
         py = toPoint3(0,1,0);
         pz = toPoint3(0,0,1);
-        npx = toPoint3(-4,0,0);
+        npx = toPoint3(-2,0,0);
         npy = toPoint3(0,-1,0);
         npz = toPoint3(0,0,-1);
 
@@ -69,7 +69,7 @@ class TestPublisher(Node):
 
         self.poly = PolyhedronStamped()
         self.poly.header.stamp = self.get_clock().now().to_msg()
-        self.poly.header.frame_id = "camera"
+        self.poly.header.frame_id = "vicon/world"
         self.poly.poly = poly
 
     def timer_callback(self):
