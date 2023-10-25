@@ -3,6 +3,7 @@
 
 #include "precompile.hpp"
 #include "visualization_msgs/msg/marker.hpp"
+#include "visualization_msgs/msg/marker_array.hpp"
 #include <decomp_geometry/geometric_utils.h>
 #include <decomp_util/line_segment.h>
 #include <decomp_util/seed_decomp.h>
@@ -11,6 +12,15 @@
 
 namespace decompros {
 
+
+  using Marker = visualization_msgs::msg::Marker;
+  using MarkerArray = visualization_msgs::msg::MarkerArray;
+  using Header = std_msgs::msg::Header;
+  using Polyhedron = decomp_ros_msgs::msg::Polyhedron;
+  using PolyhedronStamped = decomp_ros_msgs::msg::PolyhedronStamped;
+  using PolyhedronArray = decomp_ros_msgs::msg::PolyhedronArray;
+  using Faces = vec_E<vec_Vec3f>;
+
 class VizPoly : public rclcpp::Node {
 
 public:
@@ -18,37 +28,40 @@ public:
 
 protected:
   // subs
-  rclcpp::Subscription<decomp_ros_msgs::msg::PolyhedronStamped>::SharedPtr
-      sub_polygon_;
-  rclcpp::Subscription<decomp_ros_msgs::msg::PolyhedronArray>::SharedPtr
-      sub_polygon_array_;
+  rclcpp::Subscription<PolyhedronStamped>::SharedPtr
+      sub_;
+  rclcpp::Subscription<PolyhedronArray>::SharedPtr
+      sub_array_;
 
   // pubs
-  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr
-      pub_polygon_viz2_;
-  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr
-      pub_polygon_array_viz2_;
+  rclcpp::Publisher<MarkerArray>::SharedPtr
+      pub_viz_;
+  rclcpp::Publisher<MarkerArray>::SharedPtr
+      pub_array_viz_;
 
   // params
-  double color_r_ = 0.0f;
-  double color_g_ = 1.0f;
-  double color_b_ = 0.0f;
-  double color_a_ = 1.0f;
+  double color_r_ = 0.0;
+  double color_g_ = 1.0;
+  double color_b_ = 0.0;
+  double color_a_ = 1.0;
+  double line_w_ = 0.01;
 
 
   // vars
 
   // methods
 
-  void
-  callback(const decomp_ros_msgs::msg::PolyhedronStamped::SharedPtr msg) const;
-  void array_callback(
-      const decomp_ros_msgs::msg::PolyhedronArray::SharedPtr array_msg) const;
+  void callback(const PolyhedronStamped::SharedPtr msg) const;
+  void array_callback(const PolyhedronArray::SharedPtr array_msg) const;
+  
+  Polyhedron3D convertToPolyhedron(Polyhedron msg) const;
 
-  void add_to_marker_msg(visualization_msgs::msg::Marker &marker_msg,
-                         Polyhedron3D &poly) const;
+  bool convertToViz(
+      MarkerArray & marker_msg, Header header, Polyhedron3D & poly) const;
 
-  Polyhedron3D convertToPolyhedron(decomp_ros_msgs::msg::Polyhedron msg) const;
+  bool createFacesMarker(Marker & marker, Header header, Faces & faces) const;
+  bool createEdgesMarker(Marker & marker, Header header, Faces & faces) const;
+
 };
 
 } // namespace decompros

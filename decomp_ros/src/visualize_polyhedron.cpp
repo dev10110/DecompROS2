@@ -17,28 +17,29 @@ VizPoly::VizPoly(const rclcpp::NodeOptions &options)
 
   using std::placeholders::_1;
 
-  pub_polygon_viz2_ =
-      this->create_publisher<visualization_msgs::msg::Marker>("sfc/viz", 1);
+  pub_viz_=
+      this->create_publisher<visualization_msgs::msg::MarkerArray>("sfc/viz", 1);
 
-  pub_polygon_array_viz2_ =
-      this->create_publisher<visualization_msgs::msg::Marker>("sfc_array/viz",
-                                                              1);
+  pub_array_viz_ =
+     this->create_publisher<visualization_msgs::msg::MarkerArray>("sfc_array/viz",
+                                                             1);
 
   color_r_ = this->declare_parameter<double>("color_r", color_r_);
   color_g_ = this->declare_parameter<double>("color_g", color_g_);
   color_b_ = this->declare_parameter<double>("color_b", color_b_);
   color_a_ = this->declare_parameter<double>("color_a", color_a_);
+  line_w_ = this->declare_parameter<double>("edge_width", line_w_);
 
   // create the subscribers
   rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
   auto qos_sensor_data = rclcpp::QoS(
       rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
 
-  sub_polygon_ =
+  sub_ =
       this->create_subscription<decomp_ros_msgs::msg::PolyhedronStamped>(
           "sfc", qos_sensor_data, std::bind(&VizPoly::callback, this, _1));
 
-  sub_polygon_array_ =
+  sub_array_ =
       this->create_subscription<decomp_ros_msgs::msg::PolyhedronArray>(
           "sfc_array", qos_sensor_data,
           std::bind(&VizPoly::array_callback, this, _1));
@@ -62,22 +63,116 @@ void VizPoly::callback(
 
   Polyhedron3D poly = convertToPolyhedron(msg->poly);
 
-  // construct marker message
-  visualization_msgs::msg::Marker marker_msg;
-  marker_msg.header = msg->header;
-  marker_msg.type = visualization_msgs::msg::Marker::TRIANGLE_LIST;
-  marker_msg.color.r = color_r_;
-  marker_msg.color.g = color_g_;
-  marker_msg.color.b = color_b_;
-  marker_msg.color.a = color_a_;
-  marker_msg.scale.x = 1;
-  marker_msg.scale.y = 1;
-  marker_msg.scale.z = 1;
+  visualization_msgs::msg::MarkerArray marker_msg;
 
-  // add in the polygon
-  add_to_marker_msg(marker_msg, poly);
+  bool suc = convertToViz(marker_msg, msg->header, poly);
+  if (!suc)
+    return;
 
-  pub_polygon_viz2_->publish(marker_msg);
+  // publish the message
+  pub_viz_->publish(marker_msg);
+
+}
+
+bool VizPoly::convertToViz(visualization_msgs::msg::MarkerArray & marker_msg, std_msgs::msg::Header header, Polyhedron3D & poly) const
+{
+
+  // first extract the faces of the polyhedron
+  vec_E<vec_Vec3f> faces = cal_vertices(poly);
+  
+  if (faces.size() == 0) {
+    RCLCPP_WARN(this->get_logger(), "Polyhedron is empty! (has 0 faces)");
+    return false;
+  }
+
+  // construct faces message
+  visualization_msgs::msg::Marker faces_marker;
+  visualization_msgs::msg::Marker edges_marker;
+
+  bool suc = createFacesMarker(faces_marker, header, faces);
+  if (!suc)
+    return false;
+
+  suc = createEdgesMarker(edges_marker, header, faces);
+  if (!suc)
+    return false;
+  edges_marker.header = header;
+
+  // combine the two msgs
+  marker_msg.markers.push_back(faces_marker);
+  marker_msg.markers.push_back(edges_marker);
+
+  RCLCPP_WARN(get_logger(), "added both messages");
+
+  return true;
+}
+
+bool VizPoly::createFacesMarker(visualization_msgs::msg::Marker & marker, std_msgs::msg::Header header, vec_E<vec_Vec3f> & faces) const 
+{
+  marker.header = header;
+  marker.ns = "faces";
+  marker.id = 0;
+  marker.type = visualization_msgs::msg::Marker::TRIANGLE_LIST;
+  marker.color.r = color_r_;
+  marker.color.g = color_g_;
+  marker.color.b = color_b_;
+  marker.color.a = color_a_;
+  marker.scale.x = 1;
+  marker.scale.y = 1;
+  marker.scale.z = 1;
+
+  bool face_added = false;
+  
+  for (auto verts : faces) {
+    // each face has a list of points making up the face
+    size_t N = verts.size();
+    if (N < 3) {
+      RCLCPP_WARN(this->get_logger(),
+                  "Polyhedron face is empty! (has < 3 verts)");
+    }
+    for (size_t i = 1; i < N - 1; i++) {
+      marker.points.push_back(toPoint(verts[0])); // form the triangle
+      marker.points.push_back(toPoint(verts[i]));
+      marker.points.push_back(toPoint(verts[i + 1]));
+      face_added = true;
+    }
+  }
+
+  return face_added;
+
+}
+
+bool VizPoly::createEdgesMarker(visualization_msgs::msg::Marker & marker, std_msgs::msg::Header header, vec_E<vec_Vec3f> & faces) const
+{
+
+  marker.header = header;
+  marker.ns = "edges";
+  marker.id = 1;
+  marker.type = visualization_msgs::msg::Marker::LINE_LIST;
+  marker.color.r = color_r_;
+  marker.color.g = color_g_;
+  marker.color.b = color_b_;
+  marker.color.a = 1.0; // force the edges to have alpha=1.0;
+  marker.scale.x = line_w_; 
+
+  bool edge_added = false;
+  
+  for (auto verts : faces) {
+    // each face has a list of points making up the face
+    size_t N = verts.size();
+    if (N < 2) {
+      RCLCPP_WARN(this->get_logger(),
+                  "Polyhedron face is empty! (has < 2 verts)");
+    }
+    for (size_t i = 0; i < N; i++) {
+      marker.points.push_back(toPoint(verts[i % N]));
+      marker.points.push_back(toPoint(verts[(i + 1) % N ]));
+      edge_added = true;
+    }
+  }
+
+  return edge_added;
+
 }
 
 void VizPoly::array_callback(
@@ -88,39 +183,20 @@ void VizPoly::array_callback(
     RCLCPP_WARN(this->get_logger(), "skipping sfc array has no polyhedrons");
     return;
   }
+  
 
-  visualization_msgs::msg::Marker marker_msg;
-  marker_msg.header = array_msg->header;
-  marker_msg.type = visualization_msgs::msg::Marker::TRIANGLE_LIST;
-  marker_msg.color.r = color_r_;
-  marker_msg.color.g = color_g_;
-  marker_msg.color.b = color_b_;
-  marker_msg.color.a = color_a_;
-  marker_msg.scale.x = 1.0;
-  marker_msg.scale.y = 1.0;
-  marker_msg.scale.z = 1.0;
-
-  for (auto msg : array_msg->polys) {
-
-    // convert msg to polhedron
-    size_t N = msg.poly.ns.size();
-    if (N == 0) {
-      RCLCPP_WARN(this->get_logger(), "skipping: msg has no normals");
-      return;
-    }
-    if (msg.poly.ps.size() != N) {
-      RCLCPP_WARN(this->get_logger(), "skipping: size(msg.ns) != size(msg.ps)");
-      return;
-    }
-
-    auto poly = convertToPolyhedron(msg.poly);
-
-    // add lines to marker msg
-    add_to_marker_msg(marker_msg, poly);
+  visualization_msgs::msg::MarkerArray marker_msg;
+  
+  for (auto poly_msg : array_msg->polys)
+  {
+    Polyhedron3D poly = convertToPolyhedron(poly_msg.poly);
+    bool suc = convertToViz(marker_msg, array_msg->header, poly);
+    if (!suc)
+      return; // failed to convert one of the polyhedrons
   }
 
   // now publish the full msg
-  pub_polygon_array_viz2_->publish(marker_msg);
+  pub_array_viz_->publish(marker_msg);
 }
 
 Polyhedron3D
@@ -137,55 +213,6 @@ VizPoly::convertToPolyhedron(decomp_ros_msgs::msg::Polyhedron msg) const {
   }
 
   return poly;
-}
-
-// void VizPoly::add_to_marker_msg(visualization_msgs::msg::Marker &marker_msg,
-//                                 Polyhedron3D &poly) const {
-//
-//   vec_E<vec_Vec3f> faces = cal_vertices(poly);
-//   if (faces.size() == 0) {
-//     RCLCPP_WARN(this->get_logger(), "Polyhedron is empty! (has 0 faces)");
-//   }
-//
-//   // the line list will draw points in pairs
-//   for (auto verts : faces) {
-//
-//     // each face has a list of points making up the face
-//     size_t N = verts.size();
-//     if (faces.size() == 0) {
-//       RCLCPP_WARN(this->get_logger(),
-//                   "Polyhedron face is empty! (has 0 verts)");
-//     }
-//     for (size_t i = 0; i < N; i++) {
-//       marker_msg.points.push_back(toPoint(verts[i % N]));
-//       marker_msg.points.push_back(toPoint(verts[(i + 1) % N]));
-//     }
-//   }
-// }
-
-void VizPoly::add_to_marker_msg(visualization_msgs::msg::Marker &marker_msg,
-                                Polyhedron3D &poly) const {
-
-  // this version tries to plot a triangle list
-
-  vec_E<vec_Vec3f> faces = cal_vertices(poly);
-  if (faces.size() == 0) {
-    RCLCPP_WARN(this->get_logger(), "Polyhedron is empty! (has 0 faces)");
-  }
-
-  for (auto verts : faces) {
-    // each face has a list of points making up the face
-    size_t N = verts.size();
-    if (N < 3) {
-      RCLCPP_WARN(this->get_logger(),
-                  "Polyhedron face is empty! (has < 3 verts)");
-    }
-    for (size_t i = 1; i < N - 1; i++) {
-      marker_msg.points.push_back(toPoint(verts[0])); // form the triangle
-      marker_msg.points.push_back(toPoint(verts[i]));
-      marker_msg.points.push_back(toPoint(verts[i + 1]));
-    }
-  }
 }
 
 } // namespace decompros
