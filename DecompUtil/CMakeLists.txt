@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 2.8.3)
+# cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(decomp_util)
 
 # set default build type
@@ -9,7 +10,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wno-deprecated-declara
 
 set(BUILD_SHARED_LIBS ON)
 
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3 3.3.7 EXACT REQUIRED) # v3.4 is not allowed
+
+# # Add Eigen include directories
+if (Eigen3_FOUND)
+    message("Found Eigen version: ${Eigen3_VERSION}")
+    message("Eigen found: ${EIGEN3_INCLUDE_DIRS}")
+else()
+    message(FATAL_ERROR "Eigen not found.")
+endif()
+
 include_directories(${EIGEN3_INCLUDE_DIRS} include)
 
 include(CTest)
